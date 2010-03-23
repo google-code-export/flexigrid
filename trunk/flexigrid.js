@@ -1000,7 +1000,7 @@
 										
 									var nv = $('th:visible',g.hDiv).index(this);
 									var onl = parseInt($('div:eq('+nv+')',g.cDrag).css('left'));
-									var nw = parseInt($(g.nBtn).width()) + parseInt($(g.nBtn).css('borderLeftWidth'));
+									var nw = jQuery(g.nBtn).outerWidth();
 									nl = onl - nw + Math.floor(p.cgwidth/2);
 									
 									$(g.nDiv).hide();$(g.nBtn).hide();
