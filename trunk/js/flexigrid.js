@@ -700,7 +700,7 @@
 				if (cm.width) {
 					$(th).attr('width', cm.width);
 				}
-				if (cm.hidden) {
+				if ($(cm).attr('hide')) {
 					th.hidden = true;
 				}
 				if (cm.process) {
