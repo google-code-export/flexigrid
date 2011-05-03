@@ -33,6 +33,7 @@
 			pagetext: 'Page',
 			outof: 'of',
 			findtext: 'Find',
+			params: [], //allow optional parameters to be passed around
 			procmsg: 'Processing, please wait ...',
 			query: '',
 			qtype: '',
@@ -523,7 +524,7 @@
 					name: 'qtype',
 					value: p.qtype
 				}];
-				if (p.params) {
+				if (p.params.length) {
 					for (var pi = 0; pi < p.params.length; pi++) {
 						param[param.length] = p.params[pi];
 					}
