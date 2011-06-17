@@ -3,6 +3,7 @@
 = Frequently Asked Questions =
 
 == Typical Grid and Debug tools==
+
 In these examples, we use a typical Grid:
 {{{
 var myFlex = { 
@@ -20,14 +21,21 @@ $('#grid01').flexigrid($.extend({}, myFlex, {
     ]
 })); 
 }}}
-For debug we use [http://getfirebug.com/logging console.log()] more likely than alert(), which is not always work as as expected.
+
+For debug we use [http://getfirebug.com/logging console.log()] more likely than alert(), which is not always work as expected.
 
 == Examples ==
+
  * [#Dynamic_columns_and_Post_parameter_to_server]
  * [#Get_selected_row]
  * [#Mouseclick_and_other_events]
+ * [#Multiple_filters]
+ * [#Format_cells]
 
 === Dynamic columns and Post parameter to server ===
+
+Colmodel define in variable.
+Parameters send to server by .flexOptions() on onSubmit().
 
 {{{
 var colModel01 = [ 
@@ -58,6 +66,7 @@ colls=colls%255B%255D%3Dname%26colls%255B%255D%3Dstatus%26colls%255B
 
 The difficulty lies in linking: column_name - data. That is why the order of columns can be changed, and we can not use index in the array of row cells.
 In flexigrid-1.1 we have the attribute 'abbr' for sortable table cells (issue 46).
+
 {{{
 $('#grid01').click(function(event){
     $('.trSelected', this).each( function(){
@@ -72,10 +81,78 @@ $('#grid01').click(function(event){
 }}}
 
 === Mouseclick and other events ===
+
 When we bind the event to the Grid, we can use [http://api.jquery.com/bind/ bind()] and its shortcuts, as in the example [#Get_selected_row].
 If we bind the event to the cells, we have to use the [http://api.jquery.com/live/ live()]. Because it when receiving data grid content is recreated.
+
 {{{
 $('.flexigrid tr[id*="row"]').live('mouseenter', function(){
     console.log('mouseenter rowId: ' + $(this).attr('id').substr(3));
 });
 }}}
+
+=== Multiple filters ===
+
+Just add a custom filter form
+{{{
+<form id="fmFilter"> 
+    <input id="fmFilterSel1" name="fmFilterSel1" type="checkbox" /> 
+    <input id="fmFilterSel2" name="fmFilterSel2" type="checkbox" /> 
+    <input id="fmFilterSel3" name="fmFilterSel3" type="text" /> 
+</form> 
+<table id="grid01"><tr><td></td></tr></table> 
+
+<script> 
+$('#grid01').flexigrid($.extend({}, myFlex, { 
+    onSubmit : function(){
+        $('#grid01').flexOptions({params: [{name:'callId', value:'grid01'}].concat($('#fmFilter').serializeArray())});
+        return true;
+    } 
+}); 
+</script> 
+}}}
+And you send to server the filter condition of any complexity. 
+
+=== Format cells ===
+
+You can colorize the cells, and even change the output according to the received data.
+
+{{{
+function gridFormat() { 
+    var lblStatus = { 
+        '101' : { 
+            css : '', 
+            txt : 'STATUS_OK' 
+        }, 
+        '102' : { 
+            css : 'cellDisable', 
+            txt : 'STATUS_LOCK' 
+        }, 
+        '103' : { 
+            css : 'cellWarning', 
+            txt : 'STATUS_BAD' 
+        } 
+    }; 
+    $('#grid01 tr').each( function(){ 
+        var cell = $('td[abbr="status"] >div', this); 
+        $(this).addClass( lblStatus[cell.text()].css ); 
+        cell.text( lblStatus[cell.text()].txt ); 
+    }); 
+    return true; 
+}
+
+$('#grid01').flexigrid($.extend({}, myFlex, { 
+    buttons     : [
+        {name: 'CLEAR', onpress: function(com,grid){ $('#grid01').flexAddData({rows:[],page:0,total:0}); }},
+        {name: 'FILL',  onpress: function(com,grid){ $('#grid01').flexAddData({rows:[
+            {id:'id0',cell:['name00',101,'A']},
+            {id:'id1',cell:['name01',102,'B']},
+            {id:'id2',cell:['name02',103,'C']}
+        ],page:1,total:3}); }}
+    ],
+    onSuccess   : gridFormat 
+}); 
+}}}
+
+In this example, the Grid has a buttons for fill/clear the test data.
+In column "status" we provide text labels for numeric values.
