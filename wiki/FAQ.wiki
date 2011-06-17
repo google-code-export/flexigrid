@@ -1,0 +1,81 @@
+#summary Frequently Asked Questions.
+
+= Frequently Asked Questions =
+
+== Typical Grid and Debug tools==
+In these examples, we use a typical Grid:
+{{{
+var myFlex = { 
+    autoload    : false, 
+    dataType    : 'json', 
+    url         : 'grid.php', 
+    usepager    : true 
+}; 
+
+$('#grid01').flexigrid($.extend({}, myFlex, { 
+    colModel    : [ 
+        {name: 'name',   display: 'NAME',   sortable: true}, 
+        {name: 'status', display: 'STATUS', sortable: true}, 
+        {name: 'sign',   display: 'SIGN',   sortable: true} 
+    ]
+})); 
+}}}
+For debug we use [http://getfirebug.com/logging console.log()] more likely than alert(), which is not always work as as expected.
+
+== Examples ==
+ * [#Dynamic_columns_and_Post_parameter_to_server]
+ * [#Get_selected_row]
+ * [#Mouseclick_and_other_events]
+
+=== Dynamic columns and Post parameter to server ===
+
+{{{
+var colModel01 = [ 
+        {name: 'name',   display: 'NAME',   sortable: true}, 
+        {name: 'status', display: 'STATUS', sortable: true}, 
+        {name: 'sign',   display: 'SIGN',   sortable: true} 
+]; 
+
+$('#grid01').flexigrid($.extend({}, myFlex, { 
+    colModel    : colModel01, 
+    onSubmit    : function(){ 
+        $('#grid01').flexOptions({params: [ 
+            {name:'colls', value: $.param({colls: $.map(colModel01, function(elem,id){return elem.name}) }) } 
+        ]}); 
+        return true; 
+    } 
+})); 
+}}}
+
+In this code we post to server on load next data (with column names):
+{{{
+page=1&rp=15&sortname=undefined&sortorder=undefined&query=&qtype=& 
+colls=colls%255B%255D%3Dname%26colls%255B%255D%3Dstatus%26colls%255B 
+%255D%3Dsign 
+}}}
+
+=== Get selected row ===
+
+The difficulty lies in linking: column_name - data. That is why the order of columns can be changed, and we can not use index in the array of row cells.
+In flexigrid-1.1 we have the attribute 'abbr' for sortable table cells (issue 46).
+{{{
+$('#grid01').click(function(event){
+    $('.trSelected', this).each( function(){
+        console.log(
+            '  rowId: '  + $(this).attr('id').substr(3) +
+            '  name: '   + $('td[abbr="name"] >div', this).html() +
+            '  sign: '   + $('td[abbr="sign"] >div', this).html() +
+            '  status: ' + $('td[abbr="status"] >div', this).html() 
+        );
+    });
+});
+}}}
+
+=== Mouseclick and other events ===
+When we bind the event to the Grid, we can use [http://api.jquery.com/bind/ bind()] and its shortcuts, as in the example [#Get_selected_row].
+If we bind the event to the cells, we have to use the [http://api.jquery.com/live/ live()]. Because it when receiving data grid content is recreated.
+{{{
+$('.flexigrid tr[id*="row"]').live('mouseenter', function(){
+    console.log('mouseenter rowId: ' + $(this).attr('id').substr(3));
+});
+}}}
