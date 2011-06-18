@@ -156,3 +156,4 @@ $('#grid01').flexigrid($.extend({}, myFlex, {
 
 In this example, the Grid has a buttons for fill/clear the test data.
 In column "status" we provide text labels for numeric values.
+Keep in mind that 'abbr' implemented in sortable columns only ([#Get_selected_row]).
