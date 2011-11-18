@@ -82,8 +82,16 @@ $('#grid01').click(function(event){
 
 === Mouseclick and other events ===
 
-When we bind the event to the Grid, we can use [http://api.jquery.com/bind/ bind()] and its shortcuts, as in the example [#Get_selected_row].
-If we bind the event to the cells, we have to use the [http://api.jquery.com/live/ live()]. Because it when receiving data grid content is recreated.
+As of jQuery 1.7, the [http://api.jquery.com/on/ .on()] method provides all functionality required for attaching event handlers.
+
+{{{
+$('.flexigrid').on('mouseenter', 'tr[id*="row"]', function(){
+    console.log('mouseenter rowId: ' + $(this).attr('id').substr(3));
+});
+}}}
+
+With older jQuery:
+If we bind the event to the cells, we have to use the [http://api.jquery.com/live/ .live()] or [http://api.jquery.com/delegate/ .delegate()]. Because it when receiving data grid content is recreated.
 
 {{{
 $('.flexigrid tr[id*="row"]').live('mouseenter', function(){
